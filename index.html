@@ -121,7 +121,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0.9rem 0;
+    padding-top: 0.9rem;
+    padding-bottom: 0.9rem;
     gap: 1.5rem;
   }
   .brand { display: flex; align-items: center; gap: 0.65rem; }
@@ -144,6 +145,11 @@
   nav a { text-decoration: none; }
   nav a:hover, nav a:focus-visible { color: var(--ink); }
   nav a:focus-visible { outline: 2px solid var(--blue); outline-offset: 4px; }
+  @media (max-width: 680px) {
+    nav { display: none; }
+    .wordmark small { display: none; }
+    .header-row { gap: 0.75rem; }
+  }
 
   .btn {
     font: inherit;
@@ -337,6 +343,79 @@
   .compare-bars .col span { font-size: 0.72rem; color: var(--muted); font-family: ui-monospace, monospace; }
   .fine-print { font-size: 0.74rem; color: var(--muted); margin-top: 1.2rem; }
 
+  /* ROI calculator */
+  .roi-calc {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    padding: clamp(1.4rem, 3vw, 2rem);
+    margin-top: 1.4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+  @media (max-width: 800px) { .roi-calc { grid-template-columns: 1fr; } }
+  .roi-calc h3 { margin: 0 0 1.1rem; font-size: 1.02rem; }
+  .calc-field { margin-bottom: 1.3rem; }
+  .calc-field:last-child { margin-bottom: 0; }
+  .calc-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.86rem;
+    margin-bottom: 0.5rem;
+  }
+  .calc-label .val { font-family: ui-monospace, monospace; color: var(--blue-deep); font-weight: 700; }
+  .calc-field input[type="range"] {
+    width: 100%;
+    accent-color: var(--blue);
+  }
+  .calc-results { display: flex; flex-direction: column; justify-content: center; gap: 1.1rem; }
+  .calc-result {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 0.9rem 1.1rem;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .calc-result .label { font-size: 0.86rem; color: var(--muted); }
+  .calc-result .out { font-size: 1.5rem; font-weight: 800; color: var(--success); font-family: ui-monospace, monospace; }
+  .calc-result .out.blue { color: var(--blue-deep); }
+
+  /* FAQ */
+  .faq { display: flex; flex-direction: column; gap: 0.7rem; max-width: 44rem; }
+  .faq details {
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    padding: 0 1.1rem;
+  }
+  .faq summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1rem 0;
+    font-weight: 700;
+    font-size: 0.98rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "+";
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: var(--blue);
+    flex: none;
+    transition: transform 0.2s ease;
+  }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq summary:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+  .faq .faq-answer { margin: 0 0 1.1rem; color: var(--muted); font-size: 0.92rem; max-width: 40rem; }
+  @media (prefers-reduced-motion: no-preference) {
+    .faq summary::after { transition: transform 0.2s ease; }
+  }
+
   /* pricing */
   .plans {
     display: grid;
@@ -480,6 +559,7 @@
       <a href="#ciclo">Como funciona</a>
       <a href="#roi">Economia</a>
       <a href="#planos">Planos</a>
+      <a href="#faq">FAQ</a>
     </nav>
     <a href="#demo" class="btn btn-primary btn-small">Solicitar demonstração</a>
   </div>
@@ -597,6 +677,31 @@
         </div>
       </div>
       <p class="fine-print">Valores ilustrativos, baseados em médias de mercado para custo de estagiário e no plano de entrada do JusLeads — use como referência de proporção, não como cotação fechada.</p>
+
+      <div class="roi-calc">
+        <div>
+          <h3>Calcule sua economia</h3>
+          <div class="calc-field">
+            <div class="calc-label"><span>Tribunais monitorados</span><span class="val"><span id="calcCourtsVal">6</span> TJs</span></div>
+            <input type="range" id="calcCourts" min="1" max="27" value="6" step="1" aria-label="Número de tribunais monitorados" />
+          </div>
+          <div class="calc-field">
+            <div class="calc-label"><span>Horas/semana em pesquisa manual</span><span class="val"><span id="calcHoursVal">15</span>h</span></div>
+            <input type="range" id="calcHours" min="1" max="40" value="15" step="1" aria-label="Horas por semana em pesquisa manual" />
+          </div>
+        </div>
+        <div class="calc-results">
+          <div class="calc-result">
+            <span class="label">Horas economizadas/mês</span>
+            <span class="out blue" id="calcHoursSaved">0h</span>
+          </div>
+          <div class="calc-result">
+            <span class="label">Economia financeira/ano</span>
+            <span class="out" id="calcMoneySaved">R$0</span>
+          </div>
+        </div>
+      </div>
+      <p class="fine-print">Estimativa considera 1 estagiário a cada 30h/semana de pesquisa manual, ao custo médio de R$1.800/mês cada, e redução de 90% do tempo manual após a adoção. Assinatura JusLeads: R$1.000/mês até 6 tribunais, +R$500/tribunal extra, com teto de R$2.000/mês (plano Nacional, 27 TJs).</p>
     </div>
   </section>
 
@@ -652,6 +757,34 @@
     </div>
   </section>
 
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <span class="eyebrow">perguntas frequentes</span>
+        <h2>Antes de marcar a demonstração.</h2>
+        <p>As perguntas que mais recebemos de escritórios avaliando o JusLeads.</p>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>A automação de captação respeita as normas do Código de Ética da OAB?</summary>
+          <p class="faq-answer">Sim. O JusLeads trabalha exclusivamente com dados públicos de distribuição processual, disponibilizados pelos próprios tribunais de justiça — a mesma informação que qualquer pessoa pode consultar manualmente nos diários oficiais. Não há acesso a dados sigilosos ou sob segredo de justiça, e o tratamento das informações segue a LGPD. A abordagem comercial após a captação é de responsabilidade do próprio escritório, dentro das normas da OAB.</p>
+        </details>
+        <details>
+          <summary>Como funciona a filtragem para evitar leads fora do perfil?</summary>
+          <p class="faq-answer">Cada escritório define o perfil de interesse por matéria (ex.: direito do consumidor, trabalhista, tributário), comarca e faixa de valor da causa. Só chegam ao painel os processos que casam com esses critérios — o resto é descartado automaticamente, sem gerar ruído para o time comercial.</p>
+        </details>
+        <details>
+          <summary>O JusLeads se integra com outros sistemas?</summary>
+          <p class="faq-answer">Sim. Os planos Nacional e Rede incluem API dedicada para integração com o CRM ou ERP que o escritório já usa, além de integrações personalizadas conforme a necessidade — sem precisar migrar de sistema para adotar o JusLeads.</p>
+        </details>
+        <details>
+          <summary>Quanto tempo leva a implementação?</summary>
+          <p class="faq-answer">O onboarding é guiado e rápido: configuramos os tribunais e filtros de interesse, criamos os usuários da equipe e treinamos o time comercial em uma única sessão. A maioria dos escritórios está operando com leads reais chegando na primeira semana.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
   <section id="demo">
     <div class="wrap">
       <div class="intake">
@@ -671,7 +804,7 @@
             </div>
             <div class="field-row">
               <div class="field">
-                <label for="email">E-mail profissional</label>
+                <label for="email">E-mail corporativo</label>
                 <input id="email" name="E-mail" type="email" required autocomplete="email" />
               </div>
               <div class="field">
@@ -685,15 +818,16 @@
                 <input id="phone" name="WhatsApp" type="tel" autocomplete="tel" />
               </div>
               <div class="field">
-                <label for="team">Vendedores/atendentes na equipe</label>
-                <select id="team" name="Tamanho da equipe">
-                  <option>1–2</option>
-                  <option>3–5</option>
-                  <option>6–15</option>
-                  <option>16+</option>
+                <label for="team">Tamanho da equipe / área jurídica principal</label>
+                <select id="team" name="Tamanho da equipe / área jurídica">
+                  <option>1–2 · Advogado autônomo</option>
+                  <option>3–5 · Cível/Consumidor</option>
+                  <option>6–15 · Trabalhista</option>
+                  <option>16+ · Tributário/Multiárea</option>
                 </select>
               </div>
             </div>
+            <p class="consent" style="margin: -0.2rem 0 0;">Demonstração personalizada de 15 min, sem compromisso.</p>
             <button type="submit" class="btn btn-primary">Solicitar demonstração</button>
             <p class="consent" id="formHint">Ao enviar, você concorda em receber contato do time comercial do JusLeads. Sem spam, sem revenda de dados.</p>
           </form>
@@ -826,6 +960,42 @@
       });
     }, 80);
   });
+
+  var calcCourts = document.getElementById('calcCourts');
+  var calcHours = document.getElementById('calcHours');
+  var calcCourtsVal = document.getElementById('calcCourtsVal');
+  var calcHoursVal = document.getElementById('calcHoursVal');
+  var calcHoursSaved = document.getElementById('calcHoursSaved');
+  var calcMoneySaved = document.getElementById('calcMoneySaved');
+  var INTERN_MONTHLY_COST = 1800;
+  var INTERN_WEEKLY_CAPACITY = 30;
+  var WEEKS_PER_MONTH = 4.3;
+  var MANUAL_TIME_REDUCTION = 0.9;
+
+  function jusLeadsMonthlyCost(courts) {
+    if (courts <= 6) return 1000;
+    return Math.min(2000, 1000 + (courts - 6) * 500);
+  }
+
+  function updateCalc() {
+    var courts = parseInt(calcCourts.value, 10);
+    var hoursWeek = parseInt(calcHours.value, 10);
+    calcCourtsVal.textContent = courts;
+    calcHoursVal.textContent = hoursWeek;
+
+    var hoursSavedMonth = hoursWeek * WEEKS_PER_MONTH * MANUAL_TIME_REDUCTION;
+    var internsNeeded = Math.ceil(hoursWeek / INTERN_WEEKLY_CAPACITY);
+    var internMonthlyCost = internsNeeded * INTERN_MONTHLY_COST;
+    var jusLeadsCost = jusLeadsMonthlyCost(courts);
+    var moneySavedYear = Math.max(0, (internMonthlyCost - jusLeadsCost) * 12);
+
+    calcHoursSaved.textContent = Math.round(hoursSavedMonth) + 'h';
+    calcMoneySaved.textContent = 'R$' + Math.round(moneySavedYear).toLocaleString('pt-BR');
+  }
+
+  calcCourts.addEventListener('input', updateCalc);
+  calcHours.addEventListener('input', updateCalc);
+  updateCalc();
 
   var trustList = ['TJAC','TJAL','TJAP','TJAM','TJBA','TJCE','TJDFT','TJES','TJGO','TJMA','TJMT','TJMS','TJMG','TJPA','TJPB','TJPR','TJPE','TJPI','TJRJ','TJRN','TJRS','TJRO','TJRR','TJSC','TJSP','TJSE','TJTO'];
   var trustRow = document.getElementById('trustRow');
