@@ -682,12 +682,12 @@
         <div>
           <h3>Calcule sua economia</h3>
           <div class="calc-field">
-            <div class="calc-label"><span>Tribunais monitorados</span><span class="val"><span id="calcCourtsVal">6</span> TJs</span></div>
-            <input type="range" id="calcCourts" min="6" max="27" value="6" step="1" aria-label="Número de tribunais monitorados" />
+            <div class="calc-label"><span>Vendedores na equipe</span><span class="val"><span id="calcSellersVal">10</span></span></div>
+            <input type="range" id="calcSellers" min="1" max="20" value="10" step="1" aria-label="Número de vendedores na equipe" />
           </div>
           <div class="calc-field">
-            <div class="calc-label"><span>Horas/semana por tribunal em pesquisa manual</span><span class="val"><span id="calcHoursVal">3</span>h</span></div>
-            <input type="range" id="calcHours" min="1" max="6" value="3" step="0.5" aria-label="Horas por semana por tribunal em pesquisa manual" />
+            <div class="calc-label"><span>Tribunais monitorados</span><span class="val"><span id="calcCourtsVal">6</span> TJs</span></div>
+            <input type="range" id="calcCourts" min="6" max="27" value="6" step="1" aria-label="Número de tribunais monitorados" />
           </div>
         </div>
         <div class="calc-results">
@@ -702,7 +702,7 @@
           <p class="fine-print" id="calcNote" style="margin: -0.4rem 0 0;"></p>
         </div>
       </div>
-      <p class="fine-print">Estimativa considera o custo de manter estagiários equivalentes às horas totais de pesquisa manual (R$1.800/mês cada, a cada 30h/semana), com redução de 90% do tempo após a adoção. Assinatura JusLeads: R$1.000/mês até 6 tribunais, +R$500/tribunal extra, com teto de R$2.000/mês (plano Nacional, 27 TJs).</p>
+      <p class="fine-print">Estimativa considera 1 estagiário por vendedor para triagem manual (~R$1.500/mês cada, capacidade de ~10 processos/hora, 30h/semana), com redução de 90% do tempo manual após a adoção. Assinatura JusLeads: R$1.000/mês até 6 tribunais, +R$500/tribunal extra, com teto de R$2.000/mês (plano Nacional, 27 TJs) — independente do número de vendedores. Mesmo somando estagiários, a triagem manual segue limitada ao horário comercial e a poucos tribunais por vez; o JusLeads cobre os 27 TJs simultaneamente, 24h por dia.</p>
     </div>
   </section>
 
@@ -962,14 +962,14 @@
     }, 80);
   });
 
+  var calcSellers = document.getElementById('calcSellers');
   var calcCourts = document.getElementById('calcCourts');
-  var calcHours = document.getElementById('calcHours');
+  var calcSellersVal = document.getElementById('calcSellersVal');
   var calcCourtsVal = document.getElementById('calcCourtsVal');
-  var calcHoursVal = document.getElementById('calcHoursVal');
   var calcHoursSaved = document.getElementById('calcHoursSaved');
   var calcMoneySaved = document.getElementById('calcMoneySaved');
   var calcNote = document.getElementById('calcNote');
-  var INTERN_MONTHLY_COST = 1800;
+  var INTERN_MONTHLY_COST = 1500;
   var INTERN_WEEKLY_CAPACITY = 30;
   var WEEKS_PER_MONTH = 4.3;
   var MANUAL_TIME_REDUCTION = 0.9;
@@ -980,16 +980,16 @@
   }
 
   function updateCalc() {
+    var sellers = parseInt(calcSellers.value, 10);
     var courts = parseInt(calcCourts.value, 10);
-    var hoursPerCourt = parseFloat(calcHours.value);
+    calcSellersVal.textContent = sellers;
     calcCourtsVal.textContent = courts;
-    calcHoursVal.textContent = hoursPerCourt.toLocaleString('pt-BR');
 
-    var totalHoursWeek = courts * hoursPerCourt;
+    // 1 estagiário por vendedor faz a triagem manual — o custo escala com o time comercial,
+    // não com os tribunais, ao contrário da assinatura do JusLeads
+    var totalHoursWeek = sellers * INTERN_WEEKLY_CAPACITY;
     var hoursSavedMonth = totalHoursWeek * WEEKS_PER_MONTH * MANUAL_TIME_REDUCTION;
-    // custo de estagiário calculado de forma contínua (sem arredondar pra cima),
-    // pra acompanhar suavemente o custo do JusLeads conforme os sliders mudam
-    var internMonthlyCost = (totalHoursWeek / INTERN_WEEKLY_CAPACITY) * INTERN_MONTHLY_COST;
+    var internMonthlyCost = sellers * INTERN_MONTHLY_COST;
     var jusLeadsCost = jusLeadsMonthlyCost(courts);
     var moneySavedYear = (internMonthlyCost - jusLeadsCost) * 12;
 
@@ -999,12 +999,12 @@
       calcNote.textContent = '';
     } else {
       calcMoneySaved.textContent = 'R$0';
-      calcNote.textContent = 'Nesse cenário, o custo estimado da pesquisa manual já fica dentro do valor da assinatura — aumente as horas por tribunal para ver o ponto de virada.';
+      calcNote.textContent = 'Nesse cenário, o custo estimado dos estagiários já fica dentro do valor da assinatura — aumente o número de vendedores para ver o ponto de virada.';
     }
   }
 
+  calcSellers.addEventListener('input', updateCalc);
   calcCourts.addEventListener('input', updateCalc);
-  calcHours.addEventListener('input', updateCalc);
   updateCalc();
 
   var trustList = ['TJAC','TJAL','TJAP','TJAM','TJBA','TJCE','TJDFT','TJES','TJGO','TJMA','TJMT','TJMS','TJMG','TJPA','TJPB','TJPR','TJPE','TJPI','TJRJ','TJRN','TJRS','TJRO','TJRR','TJSC','TJSP','TJSE','TJTO'];
