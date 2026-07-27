@@ -696,7 +696,7 @@
             <span class="out blue" id="calcHoursSaved">0h</span>
           </div>
           <div class="calc-result">
-            <span class="label">Economia financeira/ano</span>
+            <span class="label">Economia financeira/mês</span>
             <span class="out" id="calcMoneySaved">R$0</span>
           </div>
           <p class="fine-print" id="calcNote" style="margin: -0.4rem 0 0;"></p>
@@ -991,11 +991,11 @@
     var hoursSavedMonth = totalHoursWeek * WEEKS_PER_MONTH * MANUAL_TIME_REDUCTION;
     var internMonthlyCost = sellers * INTERN_MONTHLY_COST;
     var jusLeadsCost = jusLeadsMonthlyCost(courts);
-    var moneySavedYear = (internMonthlyCost - jusLeadsCost) * 12;
+    var moneySavedMonth = internMonthlyCost - jusLeadsCost;
 
     calcHoursSaved.textContent = Math.round(hoursSavedMonth) + 'h';
-    if (moneySavedYear > 0) {
-      calcMoneySaved.textContent = 'R$' + Math.round(moneySavedYear).toLocaleString('pt-BR');
+    if (moneySavedMonth > 0) {
+      calcMoneySaved.textContent = 'R$' + Math.round(moneySavedMonth).toLocaleString('pt-BR');
       calcNote.textContent = '';
     } else {
       calcMoneySaved.textContent = 'R$0';
